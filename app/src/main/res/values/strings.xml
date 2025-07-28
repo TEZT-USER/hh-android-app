@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Home Hub</string>
+    <string name="mainGate_state_open">Open</string>
+    <string name="mainGate_state_closed">Closed</string>
+    <string name="mainGate_state_opening">Opening</string>
+    <string name="mainGate_state_closing">Closing</string>
+    <string name="mainGate_button_open">Open</string>
+    <string name="mainGate_toast_couldNotActivate">Could not activate main gate</string>
+    <string name="mainGate_toast_opening">Main gate is opening</string>
+    <string name="common_button_save">Save</string>
+    <string name="settings_label_mqttHost">MQTT host</string>
+    <string name="settings_title_settings">Settings</string>
+    <string name="settings_toast_saved">Settings saved</string>
+    <string name="mainGate_state_stopped">Stopped</string>
+    <string name="settings_label_mqttPort">MQTT port</string>
+    <string name="settings_label_mqttUser">MQTT user</string>
+    <string name="settings_label_mqttPass">MQTT password</string>
+    <string name="common_error_couldNotConnectToMqtt">Could not connect to MQTT host</string>
+    <string name="common_button_edit">Edit</string>
+    <string name="mainGate_quickSettingsTileName">Main Gate</string>
+    <string name="logs_title_logs">Logs</string>
+    <string name="settings_title_mqttBroker">MQTT broker</string>
+    <string name="app_version">Version</string>
+    <string name="mainGate_button_close">Close</string>
+    <string name="mainGate_toast_closing">Main gate is closing</string>
+    <string name="mainGate_title_mainGate">Main gate</string>
+    <string name="mainGate_label_delayedAutoclose">Close the gate automatically after a while</string>
+    <string name="mainGate_label_crossedAutoclose">Close the gate automatically after crossing</string>
+    <string name="settings_title_mainGate">Main gate</string>
+    <string name="schedule_title_schedule">Schedule</string>
+    <string name="schedule_label_delayedAutoclose">Close the gate after opening (seconds)</string>
+    <string name="schedule_label_crossedAutoclose">Close the gate after crossing (seconds)</string>
+    <string name="settings_title_userData">User data</string>
+    <string name="settings_label_userId">User ID</string>
+</resources>

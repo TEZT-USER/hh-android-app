@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Viedā Māja</string>
+    <string name="mainGate_state_open">Atvērti</string>
+    <string name="mainGate_state_closed">Aizvērti</string>
+    <string name="mainGate_state_opening">Atverās</string>
+    <string name="mainGate_state_closing">Aizverās</string>
+    <string name="mainGate_button_open">Atvērt</string>
+    <string name="mainGate_toast_opening">Galvenie vārti atverās</string>
+    <string name="mainGate_toast_couldNotActivate">Neizdevās aktivizēt galvenos vārtus</string>
+    <string name="common_button_save">Saglabāt</string>
+    <string name="settings_label_mqttHost">MQTT servera saite</string>
+    <string name="settings_title_settings">Uzstādījumi</string>
+    <string name="settings_toast_saved">Uzstādījumi saglabāti</string>
+    <string name="mainGate_state_stopped">Apstādināts</string>
+    <string name="settings_label_mqttPort">MQTT servera ports</string>
+    <string name="settings_label_mqttUser">MQTT lietotājs</string>
+    <string name="settings_label_mqttPass">MQTT parole</string>
+    <string name="common_error_couldNotConnectToMqtt">Nevarēja pieslēgties MQTT serverim</string>
+    <string name="common_button_edit">Rediģēt</string>
+    <string name="mainGate_quickSettingsTileName">Galvenie Vārti</string>
+    <string name="logs_title_logs">Žurnāls</string>
+    <string name="settings_title_mqttBroker">MQTT brokeris</string>
+    <string name="app_version">Versija</string>
+    <string name="mainGate_button_close">Aizvērt</string>
+    <string name="mainGate_toast_closing">Galvenie vārti aizverās</string>
+    <string name="mainGate_title_mainGate">Galvenie vārti</string>
+    <string name="mainGate_label_delayedAutoclose">Automātiski pēc laika aizvērt vārtus</string>
+    <string name="mainGate_label_crossedAutoclose">Automātiski pēc šķērsošanas aizvērt vārtus</string>
+    <string name="settings_title_mainGate">Galvenie vārti</string>
+    <string name="schedule_title_schedule">Grafiks</string>
+    <string name="schedule_label_delayedAutoclose">Aizvērt vārtus pēc atvēršanas (sekundes)</string>
+    <string name="schedule_label_crossedAutoclose">Aizvērt vārtus pēc šķēršošanas (sekundes)</string>
+    <string name="settings_title_userData">Lietotāja dati</string>
+    <string name="settings_label_userId">Lietotāja ID</string>
+</resources>
