@@ -1,6 +1,6 @@
 package com.example.homehub.screens.main_screen
 
-import BasicButton
+import com.example.homehub.composables.BasicButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -1,6 +1,6 @@
 package com.example.homehub.activities
 
-import LogsScreen
+import com.example.homehub.screens.logs_screen.LogsScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
