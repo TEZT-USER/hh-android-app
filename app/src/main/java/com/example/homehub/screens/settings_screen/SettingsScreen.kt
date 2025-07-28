@@ -14,66 +14,36 @@ import com.example.homehub.composables.BasicButton
 import com.example.homehub.composables.BasicTitle
 import com.example.homehub.constants.Constants
 import com.example.homehub.ui.theme.HomeHubTheme
-import com.example.homehub.utils.Preferences
 import com.example.homehub.utils.Toasts
 import com.example.homehub.viewmodels.SettingsScreenViewModel
 
 @Composable
 fun SettingsScreen(viewModel: SettingsScreenViewModel? = null) {
 
-    // Collecting events (Toast clearly)
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                is UiEvent.ShowToast -> {
-                    ToastSingleton.show(context, event.message)
-                    // Or directly:
-                    // Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
     val context = LocalContext.current
     var isEditMode by remember { mutableStateOf(false) }
 
     var mqttHost by remember {
         mutableStateOf(
-            Preferences.getPreference<String>(
-                context,
-                Constants.PREFERENCE_MQTT_HOST,
-                ""
-            )
+            viewModel?.getStringPreference(Constants.PREFERENCE_MQTT_HOST, "") ?: ""
         )
     }
     var mqttPort by remember {
         mutableStateOf(
-            Preferences.getPreference<String>(
-                context,
-                Constants.PREFERENCE_MQTT_PORT,
-                ""
-            )
+            viewModel?.getStringPreference(Constants.PREFERENCE_MQTT_PORT, "") ?: ""
         )
     }
     var mqttUser by remember {
         mutableStateOf(
-            Preferences.getPreference<String>(
-                context,
-                Constants.PREFERENCE_MQTT_USER,
-                ""
-            )
+            viewModel?.getStringPreference(Constants.PREFERENCE_MQTT_USER, "") ?: ""
         )
     }
     var mqttPass by remember {
         mutableStateOf(
-            Preferences.getPreference<String>(
-                context,
-                Constants.PREFERENCE_MQTT_PASS,
-                ""
-            )
+            viewModel?.getStringPreference(Constants.PREFERENCE_MQTT_PASS, "") ?: ""
         )
     }
-    val userId = Preferences.getPreference<String>(context, Constants.PREFERENCE_USER_ID, "")
+    val userId = viewModel?.getStringPreference(Constants.PREFERENCE_USER_ID, "") ?: ""
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box(
@@ -110,26 +80,10 @@ fun SettingsScreen(viewModel: SettingsScreenViewModel? = null) {
                     title = stringResource(if (isEditMode) R.string.common_button_save else R.string.common_button_edit),
                     onClick = {
                         if (isEditMode) {
-                            Preferences.setPreference<String>(
-                                context,
-                                Constants.PREFERENCE_MQTT_HOST,
-                                mqttHost
-                            )
-                            Preferences.setPreference<String>(
-                                context,
-                                Constants.PREFERENCE_MQTT_PORT,
-                                mqttPort
-                            )
-                            Preferences.setPreference<String>(
-                                context,
-                                Constants.PREFERENCE_MQTT_USER,
-                                mqttUser
-                            )
-                            Preferences.setPreference<String>(
-                                context,
-                                Constants.PREFERENCE_MQTT_PASS,
-                                mqttPass
-                            )
+                            viewModel?.setStringPreference(Constants.PREFERENCE_MQTT_HOST, mqttHost)
+                            viewModel?.setStringPreference(Constants.PREFERENCE_MQTT_PORT, mqttPort)
+                            viewModel?.setStringPreference(Constants.PREFERENCE_MQTT_USER, mqttUser)
+                            viewModel?.setStringPreference(Constants.PREFERENCE_MQTT_PASS, mqttPass)
                             Toasts.show(context, context.getString(R.string.settings_toast_saved))
                         }
                         isEditMode = !isEditMode

@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import org.json.JSONObject
 
 class MainGateController @Inject constructor(
@@ -15,6 +16,10 @@ class MainGateController @Inject constructor(
 
     val status: StateFlow<MainGateState?> = repository.getMainGateStatus()
         .stateIn(CoroutineScope(Dispatchers.IO), SharingStarted.Lazily, null)
+
+    fun init() {
+        repository.init()
+    }
 
     suspend fun activate(): Boolean {
         return repository.activate()

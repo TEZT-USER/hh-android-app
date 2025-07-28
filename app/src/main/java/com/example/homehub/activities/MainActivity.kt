@@ -12,7 +12,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import com.example.homehub.screens.main_screen.MainScreen
 import com.example.homehub.screens.settings_screen.SettingsScreen
 import com.example.homehub.ui.theme.HomeHubTheme
+import com.example.homehub.viewmodels.LogsScreenViewModel
 import com.example.homehub.viewmodels.MainScreenViewModel
+import com.example.homehub.viewmodels.SettingsScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

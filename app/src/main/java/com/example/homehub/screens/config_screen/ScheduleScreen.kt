@@ -21,12 +21,12 @@ import com.example.homehub.utils.Toasts
 @Composable
 fun ScheduleScreen() {
     val context = LocalContext.current
+    val preferences = remember { Preferences(context) }
     var isEditMode by remember { mutableStateOf(false) }
 
     var isDelayedAutocloseToggled by remember {
         mutableStateOf(
-            Preferences.getPreference<Boolean>(
-                context,
+            preferences.getPreference(
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_ENABLED,
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_ENABLED_DEFAULT
             )
@@ -34,8 +34,7 @@ fun ScheduleScreen() {
     }
     var isCrossedAutocloseToggled by remember {
         mutableStateOf(
-            Preferences.getPreference<Boolean>(
-                context,
+            preferences.getPreference(
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_ENABLED,
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_ENABLED_DEFAULT
             )
@@ -43,8 +42,7 @@ fun ScheduleScreen() {
     }
     var delayedAutocloseSeconds by remember {
         mutableIntStateOf(
-            Preferences.getPreference<Int>(
-                context,
+            preferences.getPreference(
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_SECONDS,
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_SECONDS_DEFAULT
             )
@@ -52,8 +50,7 @@ fun ScheduleScreen() {
     }
     var crossedAutocloseSeconds by remember {
         mutableIntStateOf(
-            Preferences.getPreference<Int>(
-                context,
+            preferences.getPreference(
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_SECONDS,
                 Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_SECONDS_DEFAULT
             )
@@ -79,82 +76,69 @@ fun ScheduleScreen() {
                 BasicToggleSwitch(
                     isToggled = isDelayedAutocloseToggled,
                     onToggledChange = { isDelayedAutocloseToggled = it },
-                    label = context.getString(R.string.mainGate_label_delayedAutoclose)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                    @@ -95, 66 + 92, 62 @@ fun ScheduleScreen() {
+                        BasicToggleSwitch(
+                            isToggled = isCrossedAutocloseToggled,
+                            onToggledChange = { isCrossedAutocloseToggled = it },
+                            label = context.getString(R.string.mainGate_label_crossedAutoclose)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                TextField(
-                    value = delayedAutocloseSeconds.toString(),
-                    onValueChange = { delayedAutocloseSeconds = it.trim().toInt() },
-                    label = { Text(context.getString(R.string.schedule_label_delayedAutoclose)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = isEditMode
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                        TextField(
+                            value = crossedAutocloseSeconds.toString(),
+                            onValueChange = { crossedAutocloseSeconds = it.trim().toInt() },
+                            label = { Text(context.getString(R.string.schedule_label_crossedAutoclose)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = isEditMode
+                        )
+                    }
 
-                BasicToggleSwitch(
-                    isToggled = isCrossedAutocloseToggled,
-                    onToggledChange = { isCrossedAutocloseToggled = it },
-                    label = context.getString(R.string.mainGate_label_crossedAutoclose)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                            Box (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                            ) {
+                        BasicButton(
+                            title = context.getString(if (isEditMode) R.string.common_button_save else R.string.common_button_edit),
+                            onClick = {
+                                if (isEditMode) {
+                                    preferences.setPreference(
+                                        Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_ENABLED,
+                                        isDelayedAutocloseToggled
+                                    )
+                                    preferences.setPreference(
+                                        Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_ENABLED,
+                                        isCrossedAutocloseToggled
+                                    )
+                                    preferences.setPreference(
+                                        Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_SECONDS,
+                                        delayedAutocloseSeconds
+                                    )
+                                    preferences.setPreference(
+                                        Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_SECONDS,
+                                        crossedAutocloseSeconds
+                                    )
 
-                TextField(
-                    value = crossedAutocloseSeconds.toString(),
-                    onValueChange = { crossedAutocloseSeconds = it.trim().toInt() },
-                    label = { Text(context.getString(R.string.schedule_label_crossedAutoclose)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = isEditMode
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-            ) {
-                BasicButton(
-                    title = context.getString(if (isEditMode) R.string.common_button_save else R.string.common_button_edit),
-                    onClick = {
-                        if (isEditMode) {
-                            Preferences.setPreference<Boolean>(
-                                context,
-                                Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_ENABLED,
-                                isDelayedAutocloseToggled
-                            )
-                            Preferences.setPreference<Boolean>(
-                                context,
-                                Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_ENABLED,
-                                isCrossedAutocloseToggled
-                            )
-                            Preferences.setPreference<Int>(
-                                context,
-                                Constants.PREFERENCE_MAIN_GATE_CONFIG_DELAYED_AUTOCLOSE_SECONDS,
-                                delayedAutocloseSeconds
-                            )
-                            Preferences.setPreference<Int>(
-                                context,
-                                Constants.PREFERENCE_MAIN_GATE_CONFIG_UNOBSTRUCTED_AUTOCLOSE_SECONDS,
-                                crossedAutocloseSeconds
-                            )
-
-                            Toasts.show(context, context.getString(R.string.settings_toast_saved))
-                        }
-                        isEditMode = !isEditMode
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 32.dp, top = 16.dp, start = 16.dp, end = 16.dp)
-                )
+                                    Toasts.show(
+                                        context,
+                                        context.getString(R.string.settings_toast_saved)
+                                    )
+                                }
+                                isEditMode = !isEditMode
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 32.dp, top = 16.dp, start = 16.dp, end = 16.dp)
+                        )
+                    }
             }
         }
     }
-}
 
-@Preview
-@Composable
-fun ScheduleScreenPreview() {
-    HomeHubTheme {
-        ScheduleScreen()
+    @Preview
+    @Composable
+    fun ScheduleScreenPreview() {
+        HomeHubTheme {
+            ScheduleScreen()
+        }
     }
-}

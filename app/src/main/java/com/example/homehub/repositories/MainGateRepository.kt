@@ -1,6 +1,5 @@
 package com.example.homehub.repositories
 
-import android.content.Context
 import android.util.Log
 import com.example.homehub.constants.Constants
 import com.example.homehub.enums.MainGateStateEnum
@@ -23,14 +22,15 @@ class MainGateRepository @Inject constructor(
     private val _status = MutableStateFlow<MainGateState?>(null)
     val status: StateFlow<MainGateState?> get() = _status
 
+    fun getMainGateStatus(): StateFlow<MainGateState?> = status
+
     var config: MainGateConfig? = null
 
     /**
      * Init function - subscribes to MQTT topics in advance
      */
-    fun init(context: Context) {
-        MQTTManager.subscribeToTopic(
-            context,
+    fun init() {
+        mqttManager.subscribeToTopic(
             Constants.MQTT_TOPIC_MAIN_GATE_STATUS_GATE
         ) { messageJson ->
             _status.value = MainGateState.fromJson(messageJson)
@@ -39,13 +39,12 @@ class MainGateRepository @Inject constructor(
                 statusReadyDeferred.complete(Unit)
             }
         }
-        MQTTManager.subscribeToTopic(
-            context,
+        mqttManager.subscribeToTopic(
             Constants.MQTT_TOPIC_MAIN_GATE_CONFIG
         ) { messageJson ->
             config = MainGateConfig.fromJson(messageJson)
         }
-        MQTTManager.addConnectedCallback("MainGate.init") {
+        mqttManager.addConnectedCallback("MainGate.init") {
             if (!statusReadyDeferred.isCompleted) {
                 statusReadyDeferred.cancel()
             }
@@ -53,7 +52,7 @@ class MainGateRepository @Inject constructor(
             _status.value = null
             config = null
         }
-        MQTTManager.addDisconnectedCallback("MainGate.init") {
+        mqttManager.addDisconnectedCallback("MainGate.init") {
             if (!statusReadyDeferred.isCompleted) {
                 statusReadyDeferred.cancel()
             }
@@ -66,15 +65,15 @@ class MainGateRepository @Inject constructor(
     /**
      * Opens/closes main gate (based on the current state)
      */
-    suspend fun activate(context: Context): Boolean {
+    suspend fun activate(): Boolean {
         // Ensure MQTT is initialized without unnecessary disconnection
-        if (!MQTTManager.areMqttParamsSet(context)) {
-            Log.e("MainGate", "MQTT parameters are not set. Cannot activate gate.")
+        if (!mqttManager.areMqttParamsSet()) {
+            Log.e(Constants.LOG_TAG_MAIN_GATE, "MQTT parameters are not set. Cannot activate gate.")
             return false
         }
 
         // Reinitialize subscriptions if needed
-        init(context)
+        init()
 
         try {
             // Wait for status to arrive
@@ -82,7 +81,7 @@ class MainGateRepository @Inject constructor(
                 statusReadyDeferred.await()
             }
 
-            val initiatorId = Preferences.getPreference(context, Constants.PREFERENCE_USER_ID, "")
+            val initiatorId = prefs.getPreference(Constants.PREFERENCE_USER_ID, "")
             val jsonCommand = JSONObject().put("initiatorId", initiatorId)
 
             val topic = if (_status.value?.state == MainGateStateEnum.CLOSED) {
@@ -91,7 +90,7 @@ class MainGateRepository @Inject constructor(
                 Constants.MQTT_TOPIC_MAIN_GATE_CLOSE
             }
 
-            MQTTManager.publishMessage(context, topic, jsonCommand)
+            mqttManager.publishMessage(topic, jsonCommand)
             return true
         } catch (e: Exception) {
             Log.e("MainGate", "Error activating gate", e)
@@ -102,10 +101,9 @@ class MainGateRepository @Inject constructor(
     /**
      * Updates main gate configuration
      */
-    fun updateConfig(context: Context, configJson: JSONObject): Boolean {
+    fun updateConfig(configJson: JSONObject): Boolean {
         return try {
-            MQTTManager.publishMessage(
-                context,
+            mqttManager.publishMessage(
                 Constants.MQTT_TOPIC_MAIN_GATE_CONFIG,
                 configJson,
                 1,
@@ -121,10 +119,9 @@ class MainGateRepository @Inject constructor(
     /**
      * Reboots main gate
      */
-    fun reboot(context: Context): Boolean {
+    fun reboot(): Boolean {
         return try {
-            MQTTManager.publishMessage(
-                context,
+            mqttManager.publishMessage(
                 Constants.MQTT_TOPIC_MAIN_GATE_REBOOT,
                 JSONObject(),
                 2,

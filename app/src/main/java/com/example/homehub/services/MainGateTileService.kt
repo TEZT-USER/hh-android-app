@@ -3,13 +3,24 @@ package com.example.homehub.services
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import com.example.homehub.MainGateController
 import com.example.homehub.R
 import com.example.homehub.enums.toUiText
-import com.example.homehub.repositories.MainGate
 import com.example.homehub.utils.MQTTManager
-import kotlinx.coroutines.*
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainGateTileService : TileService() {
+    @Inject
+    lateinit var mainGateController: MainGateController
+    @Inject
+    lateinit var mqttManager: MQTTManager
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var isOperationInProgress = false
 
@@ -31,16 +42,16 @@ class MainGateTileService : TileService() {
         qsTile.icon = Icon.createWithResource(this, R.drawable.ic_tile_home_hub_light)
 
         try {
-            MainGate.init(applicationContext)
-            MQTTManager.setVisible(applicationContext)
+            mainGateController.init()
+            mqttManager.setVisible()
 
-            if (MQTTManager.areMqttParamsSet(applicationContext)) {
+            if (mqttManager.areMqttParamsSet()) {
                 qsTile.state = Tile.STATE_INACTIVE
             } else {
                 qsTile.state = Tile.STATE_UNAVAILABLE
             }
 
-            qsTile.subtitle = MainGate.status.value?.state?.toUiText(applicationContext)
+            qsTile.subtitle = mainGateController.status.value?.state?.toUiText(applicationContext)
         } catch (e: Exception) {
             qsTile.state = Tile.STATE_UNAVAILABLE
             android.util.Log.e("MainGateTileService", "Error initializing MQTT or MainGate", e)
@@ -50,7 +61,7 @@ class MainGateTileService : TileService() {
     }
 
     override fun onStopListening() {
-        MQTTManager.setInvisible()
+        mqttManager.setInvisible()
     }
 
     /**
@@ -71,7 +82,7 @@ class MainGateTileService : TileService() {
             var operationFinished = false
 
             launch(Dispatchers.IO) {
-                operationSuccessful = MainGate.activateGate(applicationContext)
+                operationSuccessful = mainGateController.activate()
                 operationFinished = true
             }
 
@@ -107,7 +118,8 @@ class MainGateTileService : TileService() {
                 qsTile.icon =
                     Icon.createWithResource(applicationContext, R.drawable.ic_tile_home_hub_light)
                 qsTile.state = Tile.STATE_INACTIVE
-                qsTile.subtitle = MainGate.status.value?.state?.toUiText(applicationContext)
+                qsTile.subtitle =
+                    mainGateController.status.value?.state?.toUiText(applicationContext)
                 qsTile.updateTile()
 
                 isOperationInProgress = false
