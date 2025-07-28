@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.homehub.R
 import com.example.homehub.composables.BasicTitle
 import com.example.homehub.ui.theme.HomeHubTheme
+import com.example.homehub.utils.Logs
 import kotlinx.coroutines.delay
 
 @Composable
@@ -33,13 +34,13 @@ fun LogsScreen() {
 
     // Load the log content when the composable is first composed
     LaunchedEffect(Unit) {
-        // Initial load of log content
-        logContent = "XXX"//Logs.getLogFileContent()
+        Logs.initialize(context)
+        logContent = Logs.getLogFileContent()
 
         // Start a loop to update log content every few seconds
         while (true) {
             delay(2000) // Update every 2 seconds
-            val newLogContent = "XXX"//Logs.getLogFileContent()
+            val newLogContent = Logs.getLogFileContent()
             if (newLogContent != logContent) {
                 logContent = newLogContent // Update if content has changed
             }
